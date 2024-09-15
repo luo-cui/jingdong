@@ -1,0 +1,7 @@
+// 实现单行截断并显示省略号
+// 1.导入组件的style内 2.在需要使用的元素样式内调用即可   @include ellipse;
+@mixin ellipse{
+  overflow: hidden;//不允许内容溢出容器边界
+  white-space: nowrap;//强制文本在一行内显示，不允许自动换行；如果容器高度不够，超出部分会被裁剪掉；一般需要搭配使用
+  text-overflow: ellipsis;//当文本溢出容器时，在溢出部分显示省略号
+}
