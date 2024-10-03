@@ -1,5 +1,3 @@
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
 // 商品详情接口，GET 请求，参数任意
 http://www.nuanwan.com/api/173639.json
 
