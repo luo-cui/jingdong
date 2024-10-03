@@ -2,31 +2,51 @@
       <!-- 附近店铺是个列表；列表中的每一项的内容列出 -->
       <div class="nearby">
       <h3>附近店铺</h3>
-      <div v-for="item in nearbyList" :key="item.id" class="nearby__item">
+      <div v-for="item in nearbyList" :key="item._id" class="nearby__item">
         <img :src="item.imgUrl" class="nearby__item__img">
         <div class="nearby__content">
-          <div class="nearby__content__title">{{item.title}}</div>
+          <div class="nearby__content__title">{{item.name}}</div>
           <div class="nearby__content__tags">
-            <span
+            <!-- 从接口的内容来看不能使用循环了，每个字段都是独立的 -->
+            <span class="nearby__content__tag">月售{{item.sales}}</span>
+            <span class="nearby__content__tag">起送¥{{item.expressLimit}}</span>
+            <span class="nearby__content__tag">基础运费¥{{item.expressPrice}}</span>
+            <!--<span
               class="nearby__content__tag"
               v-for="(innerItem,innerIndex) in item.tags"
               :key="innerIndex">{{innerItem}}
-            </span>
-            <!-- 内部也可以嵌套循环 -->
+            </span> -->
+            <!-- 内部也可以转为嵌套循环 -->
             <!-- <span class="nearby__content__tag">{{item.tags[1]}}</span>
             <span class="nearby__content__tag">{{item.tags[2]}}</span> -->
           </div>
-          <p class="nearby__content__highlight">{{item.desc}}</p>
+          <p class="nearby__content__highlight">{{item.slogan}}</p>
         </div>
       </div>
     </div>
 </template>
 
 <script>
+import { ref } from 'vue'
+import { get } from '../../utils/request.js'
+const useNearbyListEffect = () => {
+  const nearbyList = ref([])
+  const getNearbyList = async () => {
+    const res = await get('http://www.nuanwan.com/api/shop/hot-list.json')
+    console.log('Response:', res)
+    // 后者判断 res的data有无数据
+    if (res?.errno === 0 && res?.data?.length) {
+      nearbyList.value = res.data
+    }
+  }
+  // 将数据、逻辑导出
+  return { getNearbyList, nearbyList }
+}
 export default {
   name: 'NearbyView',
   setup () {
-    const nearbyList = [
+    // 删除掉所有写死的数据
+    /*     const nearbyList = [
       {
         // 设置了id
         id: 1,
@@ -34,36 +54,10 @@ export default {
         title: '沃尔玛',
         tags: ['月售1万+', '起送¥0', '基础运费¥5'],
         desc: 'VIP尊享满89元减4元运费券（每月3张）'
-      },
-      {
-        id: 2,
-        imgUrl: 'http://www.dell-lee.com/imgs/vue3/near.png',
-        title: '沃尔玛',
-        tags: ['月售1万+', '起送¥0', '基础运费¥8'],
-        desc: 'VIP尊享满89元减4元运费券（每月3张）'
-      },
-      {
-        id: 3,
-        imgUrl: 'http://www.dell-lee.com/imgs/vue3/near.png',
-        title: '沃尔玛',
-        tags: ['月售1万+', '起送¥0', '基础运费¥9'],
-        desc: 'VIP尊享满89元减4元运费券（每月3张）'
-      },
-      {
-        id: 4,
-        imgUrl: 'http://www.dell-lee.com/imgs/vue3/near.png',
-        title: '沃尔玛',
-        tags: ['月售1万+', '起送¥0', '基础运费¥5'],
-        desc: 'VIP尊享满89元减4元运费券（每月3张）'
-      },
-      {
-        id: 5,
-        imgUrl: 'http://www.dell-lee.com/imgs/vue3/near.png',
-        title: '沃尔玛',
-        tags: ['月售1万+', '起送¥0', '基础运费¥5'],
-        desc: 'VIP尊享满89元减4元运费券（每月3张）'
       }
-    ]
+    ] */
+    const { getNearbyList, nearbyList } = useNearbyListEffect()
+    getNearbyList()
     return {
       nearbyList
     }
