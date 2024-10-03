@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '@/views/home/HomeView.vue'
 import LoginView from '@/views/login/LoginView.vue'
+import RegisterView from '@/views/register/RegisterView.vue'
 
 const routes = [
   {
@@ -24,6 +25,16 @@ const routes = [
       //   next() // 正常地展示当前页面即可
       // }
     }
+  },
+  {
+    path: '/register',
+    name: 'RegisterView',
+    component: RegisterView,
+    beforeEnter (to, from, next) {
+      const { isLogin } = localStorage
+      // 如果已经登录，不能再进入注册页面，跳转到home页面
+      isLogin ? next({ name: 'HomeView' }) : next()
+    }
   }
 ]
 
@@ -41,6 +52,7 @@ const router = createRouter({
     * 在之前的 Vue Router 版本中，还可以使用 第三个参数 next 。这是一个常见的错误来源，我们经过 RFC 讨论将其移除。然而，它仍然是被支持的，这意味着你可以向任何导航守卫传递第三个参数
     // next(false):中断当前的导航，并确保整个导航被取消
     // next('/') 或 next({ path: '/' }):重定向到一个新的位置
+    添加一个导航钩子，它会在每次导航之前被执行。返回一个用来移除该钩子的函数。
  */
 router.beforeEach((to, from, next) => {
   // 判断是否已登录；如果已登录让你访问相关页面；否则跳转到登录页面
@@ -51,8 +63,12 @@ router.beforeEach((to, from, next) => {
   // tag 1 对isLogin 进行解构赋值 2 重构为三元运算
   // const isLogin = localStorage.isLogin
   const { isLogin } = localStorage
+  // 对 to.name 进行解构
+  const { name } = to
   // isLogin || to.name === 'LoginView' ? next() : next({ name: 'LoginView' }) 也可以
-  isLogin || to.name === 'LoginView'
+  // 再添加逻辑：判断是登录页面或者注册页面，会进行页面展示但会提前做一个判断
+  const isLoginOrRegister = (name === 'LoginView' || name === 'RegisterView')
+  isLogin || isLoginOrRegister
     ? next()
     : next({ name: 'LoginView' })
   /*   if (isLogin || to.name === 'LoginView') {
